@@ -5,7 +5,7 @@ def main():
     """Initialize SensorView"""
     scenario = OSIScenario()
     scenario.from_file(path="test_scenario.txt")
-    sv = scenario.get_messages() # Create a iterator for messages
+    sv = scenario.get_messages() # Create an iterator for messages
     for message in sv:
 
         sensorview = message
