@@ -178,7 +178,7 @@ class OSIScenario:
 
 if __name__ == "__main__":
     scenario = OSIScenario()
-    scenario.from_file(path="small_test.txt")
+    scenario.from_file(path="test_scenario.txt")
 
     # sv = scenario.get_messages_in_index_range(0, 1)
     # for i in sv:
