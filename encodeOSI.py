@@ -2,6 +2,7 @@ from osi3.osi_sensorview_pb2 import SensorView
 
 def main():
     """Initialize SensorView"""
+    f = open("test_scenario.txt", "ab")
     sensorview = SensorView()
 
     sv_ground_truth = sensorview.global_ground_truth
@@ -37,8 +38,10 @@ def main():
         """Serialize SensorData which can be send"""
         string_buffer = sensorview.SerializeToString()
 
-        with open("test_scenario.txt", "ab") as f:
-            f.write(string_buffer + b"$$__$$")
+        f.write(string_buffer)
+        f.write(b"$$__$$")
+
+    f.close()
  
 if __name__ == "__main__":
     main()
