@@ -4,7 +4,6 @@ Module to handle and manage OSI scenarios.
 from collections import deque
 import time
 
-from progress.bar import Bar
 from osi3.osi_sensorview_pb2 import SensorView
 from osi3.osi_groundtruth_pb2 import GroundTruth
 from osi3.osi_sensordata_pb2 import SensorData
@@ -151,6 +150,8 @@ class OSIScenario:
             serialized_message = serialized_messages_extract[rel_begin:rel_end]
             message.ParseFromString(serialized_message)
             yield message
+
+        self.scenario_file.close()
 
     def bin2osi(self, name, interval=None, index=None):
         with open(name, 'a') as f:
