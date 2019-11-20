@@ -3,6 +3,7 @@ Module to handle and manage OSI scenarios.
 """
 from collections import deque
 import time
+import lzma
 
 from osi3.osi_sensorview_pb2 import SensorView
 from osi3.osi_groundtruth_pb2 import GroundTruth
@@ -50,8 +51,11 @@ class OSIScenario:
 
     def from_file(self, path, type_name="SensorView", max_index=-1):
         """Import a scenario from a file"""
+        if path.lower().endswith(('.lzma', '.xz')):
+            self.scenario_file = lzma.open(path, "rb")
+        else:
+            self.scenario_file = open(path, "rb")
 
-        self.scenario_file = open(path, "rb")
         self.type_name = type_name
         self.timestep_count = self.retrieve_message_offsets(max_index)
 
@@ -179,7 +183,7 @@ class OSIScenario:
 
 if __name__ == "__main__":
     scenario = OSIScenario()
-    scenario.from_file(path="test_scenario.txt")
+    scenario.from_file(path="/home/vkreschenski/Documents/Projects/osi-validation/data/small_test.txt")
 
     # sv = scenario.get_messages_in_index_range(0, 1)
     # for i in sv:
@@ -192,7 +196,7 @@ if __name__ == "__main__":
     # for i in sv:
     #     print(i)
 
-    scenario.bin2osi(name="test.osi")
+    scenario.bin2osi(name="small_test.txt")
     # scenario.bin2osi(name="test1.osi", index=1)
     # scenario.bin2osi(name="test2.osi", interval=(6, 10))
 

@@ -39,7 +39,7 @@ def main():
 
         """Serialize SensorData which can be send"""
         string_buffer = sensorview.SerializeToString()
-        f.write(struct.pack("L", len(string_buffer)) + string_buffer)   
+        f.write(struct.pack("<L", len(string_buffer)) + string_buffer)   
 
     f.close()
  

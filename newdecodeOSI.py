@@ -8,6 +8,7 @@ from osi3.osi_sensorview_pb2 import SensorView
 from osi3.osi_groundtruth_pb2 import GroundTruth
 from osi3.osi_sensordata_pb2 import SensorData
 import struct
+import lzma
 
 MESSAGES_TYPE = {
     "SensorView": SensorView,
@@ -32,20 +33,24 @@ class OSIScenario:
 
     def from_file(self, path, type_name="SensorView", max_index=-1):
         """Import a scenario from a file"""
-        self.scenario_file = open(path, "rb")
+        if path.lower().endswith(('.lzma', '.xz')):
+            self.scenario_file = lzma.open(path, "rb")
+        else:
+            self.scenario_file = open(path, "rb")
+
         self.type_name = type_name
 
     def get_messages(self):
         self.scenario_file.seek(0)
         serialized_message = self.scenario_file.read()
-        INT_LENGTH = 8
+        INT_LENGTH =  len(struct.pack("<L", 0))
         message_length = 0
 
         messages = []
         i = 0
         while i < len(serialized_message):
             message = MESSAGES_TYPE[self.type_name]()
-            message_length = struct.unpack("L", serialized_message[i:INT_LENGTH+i])[0]
+            message_length = struct.unpack("<L", serialized_message[i:INT_LENGTH+i])[0]
             message.ParseFromString(serialized_message[i+INT_LENGTH:i+INT_LENGTH+message_length])
             i += message_length + INT_LENGTH
             messages.append(message)
@@ -83,7 +88,7 @@ class OSIScenario:
 
 if __name__ == "__main__":
     scenario = OSIScenario()
-    scenario.from_file(path="test_scenario_new.txt")
+    scenario.from_file(path="small_test.osi")
 
     # sv = scenario.get_messages()
     # for m in sv:
@@ -102,7 +107,7 @@ if __name__ == "__main__":
     # for i in sv:
     #     print(i)
 
-    scenario.bin2osi(name="test_new.osi")
+    scenario.bin2osi(name="small_test_converted.json")
     # scenario.bin2osi(name="test1.osi", index=1)
     # scenario.bin2osi(name="test2.osi", interval=(6, 10))
 
