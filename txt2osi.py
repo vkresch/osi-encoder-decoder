@@ -9,7 +9,7 @@ python3 txt2osi.py -f small_test.txt.lzma -c
 python3 txt2osi.py -f small_test.txt.lzma
 '''
 
-from decodeOSI import OSIScenario
+from decodeOSI import OSITrace
 import struct
 import lzma
 import argparse
@@ -50,7 +50,7 @@ def main():
     args = command_line_arguments()
 
     # Initialize the scenario class
-    scenario = OSIScenario()
+    scenario = OSITrace()
     scenario.from_file(path=args.file, type_name=args.type)
     sv = scenario.get_messages() # Create an iterator for messages
 

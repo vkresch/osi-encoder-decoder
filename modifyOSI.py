@@ -1,9 +1,9 @@
 from osi3.osi_sensorview_pb2 import SensorView
-from decodeOSI import OSIScenario
+from decodeOSI import OSITrace
 
 def main():
     """Initialize SensorView"""
-    scenario = OSIScenario()
+    scenario = OSITrace()
     scenario.from_file(path="test_scenario.txt")
     sv = scenario.get_messages() # Create an iterator for messages
     f = open("test_scenario_changes.txt", "ab")
@@ -18,9 +18,9 @@ def main():
         sv_ground_truth.version.version_minor = 0 
         sv_ground_truth.version.version_patch = 0   
 
-        string_buffer = sensorview.SerializeToString()
+        bytes_buffer = sensorview.SerializeToString()
 
-        f.write(string_buffer)
+        f.write(bytes_buffer)
         f.write(b"$$__$$")
     
     f.close()

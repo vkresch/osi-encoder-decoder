@@ -33,7 +33,7 @@ MESSAGES_TYPE = {
 }
 
 
-class OSIScenario:
+class OSITrace:
     """This class wrap OSI data. It can import and decode OSI scenarios."""
 
     def __init__(self, show_progress=True, path=None, type_name="SensorView"):
@@ -157,7 +157,7 @@ class OSIScenario:
 
         self.scenario_file.close()
 
-    def bin2osi(self, name, interval=None, index=None):
+    def txt2json(self, name, interval=None, index=None):
         with open(name, 'a') as f:
 
             if interval is None and index is None:
@@ -182,8 +182,11 @@ class OSIScenario:
 
 
 if __name__ == "__main__":
-    scenario = OSIScenario()
-    scenario.from_file(path="/home/vkreschenski/Documents/Projects/osi-validation/data/small_test.txt")
+    scenario = OSITrace()
+    scenario.from_file(path="test_scenario.txt")
+
+    scenario2 = OSITrace()
+    scenario2.from_file(path="test_scenario_changes.txt")
 
     # sv = scenario.get_messages_in_index_range(0, 1)
     # for i in sv:
@@ -196,10 +199,11 @@ if __name__ == "__main__":
     # for i in sv:
     #     print(i)
 
-    scenario.bin2osi(name="small_test.txt")
-    # scenario.bin2osi(name="test1.osi", index=1)
-    # scenario.bin2osi(name="test2.osi", interval=(6, 10))
+    scenario.txt2json(name="test_scenario.json")
+    scenario2.txt2json(name="test_scenario_changes.json")
+    # scenario.txt2json(name="test1.json", index=1)
+    # scenario.txt2json(name="test2.json", interval=(6, 10))
 
-    # scenario.bin2osi(name="test4.osi", index=0.2)
-    # scenario.bin2osi(name="test5.osi", interval=(4, 3))
+    # scenario.txt2json(name="test4.json", index=0.2)
+    # scenario.txt2json(name="test5.json", interval=(4, 3))
     

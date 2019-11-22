@@ -1,5 +1,5 @@
 # OSI encoder / decoder
-The encoder enables to encode multiple OSI messages into one file. The decoder can parse the generated file and output it in a human readable xml-like *.osi format.
+The encoder enables to encode multiple OSI messages into one file. The decoder can parse the generated file and output it in a human readable json-like format.
 
 ## Usage
 
@@ -62,10 +62,10 @@ $ python3 encodeOSI.py
 #### Decode with seperator
 Decode the generated OSI scenario.
 ```python
-from decodeOSI import OSIScenario
+from decodeOSI import OSITrace
 
 if __name__ == "__main__":
-    scenario = OSIScenario()
+    scenario = OSITrace()
     scenario.from_file(path="test_scenario.txt")
 
     # Print all messages
@@ -83,9 +83,9 @@ if __name__ == "__main__":
     print(sv)
 
     # Save output into readable osi files
-    scenario.bin2osi(name="test1.osi")
-    scenario.bin2osi(name="test2.osi", index=1)
-    scenario.bin2osi(name="test3.osi", interval=(6, 10))
+    scenario.txt2json(name="test1.json")
+    scenario.txt2json(name="test2.json", index=1)
+    scenario.txt2json(name="test3.json", interval=(6, 10))
 ```
 Type in the terminal:
 ```bash
@@ -94,31 +94,9 @@ $ python3 decodeOSI.py
 
 #### Convert from seperator scenario to length defined scenario
 
-```python
-from osi3.osi_sensorview_pb2 import SensorView
-from decodeOSI import OSIScenario
-import struct
-
-def main():
-    """Initialize SensorView"""
-    scenario = OSIScenario()
-    scenario.from_file(path="test_scenario.txt")
-    sv = scenario.get_messages() # Create an iterator for messages
-    f = open("test_scenario_new_converted.txt", "ab")
-    
-    for message in sv:
-        string_buffer = message.SerializeToString()
-        f.write(struct.pack("L", len(string_buffer)) + string_buffer) 
-    
-    f.close()
- 
-if __name__ == "__main__":
-    main()
-```
-
 Type in the terminal:
 ```bash
-$ python3 newchangeOSI.py
+$ python3 txt2osi.py -f small_test.txt
 ```
 
 #### Encode without seperator
@@ -165,7 +143,7 @@ def main():
         """Serialize SensorData which can be send"""
         string_buffer = sensorview.SerializeToString()
 
-        f.write(struct.pack("L", len(string_buffer)) + string_buffer)
+        f.write(struct.pack("<L", len(string_buffer)) + string_buffer)
 
     f.close()
  
@@ -180,10 +158,10 @@ $ python3 newencodeOSI.py
 #### Decode without seperator
 Decode the generated OSI scenario.
 ```python
-from newdecodeOSI import OSIScenario
+from newdecodeOSI import OSITrace
 
 if __name__ == "__main__":
-    scenario = OSIScenario()
+    scenario = OSITrace()
     scenario.from_file(path="test_scenario_new.txt")
 
     # Print all messages
@@ -201,9 +179,9 @@ if __name__ == "__main__":
     print(sv)
 
     # Save output into readable osi files
-    scenario.bin2osi(name="test4.osi")
-    scenario.bin2osi(name="test5.osi", index=1)
-    scenario.bin2osi(name="test6.osi", interval=(6, 10))
+    scenario.osi2json(name="test4.json")
+    scenario.osi2json(name="test5.json", index=1)
+    scenario.osi2json(name="test6.json", interval=(6, 10))
 ```
 Type in the terminal:
 ```bash

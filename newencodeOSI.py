@@ -1,10 +1,9 @@
 from osi3.osi_sensorview_pb2 import SensorView
 import struct
-import sys
 
 def main():
     """Initialize SensorView"""
-    f = open("test_scenario_new.txt", "ab")
+    f = open("test_trace.osi", "ab")
     sensorview = SensorView()
 
     sv_ground_truth = sensorview.global_ground_truth
@@ -20,9 +19,9 @@ def main():
 
     for i in range(11):
         
-        stationary_object.base.dimension.length = 3 + i
-        stationary_object.base.dimension.width = 0.5 + i
-        stationary_object.base.dimension.height = 0.89 + i
+        stationary_object.base.dimension.length = 3
+        stationary_object.base.dimension.width = 0.5
+        stationary_object.base.dimension.height = 0.89
 
         stationary_object.base.position.x = 0.0 + i
         stationary_object.base.position.y = 0.0 
