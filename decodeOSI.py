@@ -157,7 +157,7 @@ class OSITrace:
 
         self.scenario_file.close()
 
-    def txt2json(self, name, interval=None, index=None):
+    def osi2read(self, name, interval=None, index=None):
         with open(name, 'a') as f:
 
             if interval is None and index is None:
@@ -183,10 +183,10 @@ class OSITrace:
 
 if __name__ == "__main__":
     scenario = OSITrace()
-    scenario.from_file(path="test_scenario.txt")
+    scenario.from_file(path="test_trace.txt")
 
     scenario2 = OSITrace()
-    scenario2.from_file(path="test_scenario_changes.txt")
+    scenario2.from_file(path="test_trace_changes.txt")
 
     # sv = scenario.get_messages_in_index_range(0, 1)
     # for i in sv:
@@ -199,11 +199,11 @@ if __name__ == "__main__":
     # for i in sv:
     #     print(i)
 
-    scenario.txt2json(name="test_scenario.json")
-    scenario2.txt2json(name="test_scenario_changes.json")
-    # scenario.txt2json(name="test1.json", index=1)
-    # scenario.txt2json(name="test2.json", interval=(6, 10))
+    scenario.osi2read(name="test_trace.txth")
+    scenario2.osi2read(name="test_trace_changes.txth")
+    # scenario.osi2read(name="test1.txth", index=1)
+    # scenario.osi2read(name="test2.txth", interval=(6, 10))
 
-    # scenario.txt2json(name="test4.json", index=0.2)
-    # scenario.txt2json(name="test5.json", interval=(4, 3))
+    # scenario.osi2read(name="test4.txth", index=0.2)
+    # scenario.osi2read(name="test5.txth", interval=(4, 3))
     

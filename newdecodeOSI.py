@@ -62,7 +62,7 @@ class OSITrace:
     def get_messages_in_index_range(self, begin, end):
         return self.get_messages()[begin:end]        
 
-    def osi2json(self, name, interval=None, index=None):
+    def osi2read(self, name, interval=None, index=None):
         with open(name, 'a') as f:
 
             if interval is None and index is None:
@@ -88,11 +88,12 @@ class OSITrace:
 
 if __name__ == "__main__":
     scenario = OSITrace()
-    scenario.from_file(path="test_scenario.osi")
+    # scenario.from_file(path="test_trace.osi")
+    scenario.from_file(path="test_trace.osi")
 
-    # sv = scenario.get_messages()
-    # for m in sv:
-    #     print(m)
+    sv = scenario.get_messages()
+    for m in sv:
+        print(m)
 
     # sv = scenario.get_message_by_index(3) 
     # print(sv)
@@ -107,10 +108,10 @@ if __name__ == "__main__":
     # for i in sv:
     #     print(i)
 
-    scenario.osi2json(name="test_scenario_converted.json")
-    # scenario.osi2json(name="test1.json", index=1)
-    # scenario.osi2json(name="test2.json", interval=(6, 10))
+    # scenario.osi2read(name="test_scenario_converted.txth")
+    # scenario.osi2read(name="test1.txth", index=1)
+    # scenario.osi2read(name="test2.txth", interval=(6, 10))
 
-    # scenario.osi2json(name="test4.json", index=0.2)
-    # scenario.osi2json(name="test5.json", interval=(4, 3))
+    # scenario.osi2read(name="test4.txth", index=0.2)
+    # scenario.osi2read(name="test5.txth", interval=(4, 3))
     

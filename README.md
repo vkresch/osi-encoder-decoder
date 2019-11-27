@@ -7,10 +7,11 @@ The encoder enables to encode multiple OSI messages into one file. The decoder c
 Encode ten OSI messages in the file `test_scenario.txt` which change the dimensions and the x-position of a stationary object over time:
 ```python
 from osi3.osi_sensorview_pb2 import SensorView
+import struct
 
 def main():
     """Initialize SensorView"""
-    f = open("test_scenario.txt", "ab")
+    f = open("test_trace.txt", "ab")
     sensorview = SensorView()
 
     sv_ground_truth = sensorview.global_ground_truth
@@ -18,36 +19,38 @@ def main():
     sv_ground_truth.version.version_minor = 0
     sv_ground_truth.version.version_patch = 0
 
-    sv_ground_truth.timestamp.seconds = 4
-    sv_ground_truth.timestamp.nanos = 54999999
+    sv_ground_truth.timestamp.seconds = 0
+    sv_ground_truth.timestamp.nanos = 0
 
-    stationary_object = sv_ground_truth.stationary_object.add()
-    stationary_object.id.value = 114
+    moving_object = sv_ground_truth.moving_object.add()
+    moving_object.id.value = 114
 
-    for i in range(11):
+    # Generate 10 OSI messages for 9 seconds
+    for i in range(10):
+
+        # Increment the time
+        sv_ground_truth.timestamp.seconds += 1
+        sv_ground_truth.timestamp.nanos += 100000
+
+        moving_object.vehicle_classification.type = 2
         
-        stationary_object.base.dimension.length = 3 + i
-        stationary_object.base.dimension.width = 0.5 + i
-        stationary_object.base.dimension.height = 0.89 + i
+        moving_object.base.dimension.length = 5
+        moving_object.base.dimension.width = 2
+        moving_object.base.dimension.height = 1
 
-        stationary_object.base.position.x = 0.0 + i
-        stationary_object.base.position.y = 0.0 
-        stationary_object.base.position.z = 0.0
+        moving_object.base.position.x = 0.0 + i
+        moving_object.base.position.y = 0.0 
+        moving_object.base.position.z = 0.0
 
-        stationary_object.base.orientation.roll = 0.0
-        stationary_object.base.orientation.pitch = 0.0
-        stationary_object.base.orientation.yaw = 0.0 
-
-        stationary_object.classification.type = 1
-        stationary_object.classification.material = 0
-        stationary_object.classification.density = 0
-        stationary_object.classification.color = 0
+        moving_object.base.orientation.roll = 0.0
+        moving_object.base.orientation.pitch = 0.0
+        moving_object.base.orientation.yaw = 0.0 
+        
 
         """Serialize SensorData which can be send"""
         string_buffer = sensorview.SerializeToString()
-
         f.write(string_buffer)
-        f.write(b"$$__$$")
+        f.write(b'$$__$$')
 
     f.close()
  
@@ -83,9 +86,9 @@ if __name__ == "__main__":
     print(sv)
 
     # Save output into readable osi files
-    scenario.txt2json(name="test1.json")
-    scenario.txt2json(name="test2.json", index=1)
-    scenario.txt2json(name="test3.json", interval=(6, 10))
+    scenario.osi2read(name="test1.txth")
+    scenario.osi2read(name="test2.txth", index=1)
+    scenario.osi2read(name="test3.txth", interval=(6, 10))
 ```
 Type in the terminal:
 ```bash
@@ -107,7 +110,8 @@ import struct
 
 def main():
     """Initialize SensorView"""
-    f = open("test_scenario_new.txt", "ab")
+    f = open("test_trace.txt", "ab")
+    
     sensorview = SensorView()
 
     sv_ground_truth = sensorview.global_ground_truth
@@ -115,35 +119,36 @@ def main():
     sv_ground_truth.version.version_minor = 0
     sv_ground_truth.version.version_patch = 0
 
-    sv_ground_truth.timestamp.seconds = 4
-    sv_ground_truth.timestamp.nanos = 54999999
+    sv_ground_truth.timestamp.seconds = 0
+    sv_ground_truth.timestamp.nanos = 0
 
-    stationary_object = sv_ground_truth.stationary_object.add()
-    stationary_object.id.value = 114
+    moving_object = sv_ground_truth.moving_object.add()
+    moving_object.id.value = 114
 
-    for i in range(11):
+    # Generate 10 OSI messages for 9 seconds
+    for i in range(10):
+
+        # Increment the time
+        sv_ground_truth.timestamp.seconds += 1
+        sv_ground_truth.timestamp.nanos += 100000
+
+        moving_object.vehicle_classification.type = 2
         
-        stationary_object.base.dimension.length = 3 + i
-        stationary_object.base.dimension.width = 0.5 + i
-        stationary_object.base.dimension.height = 0.89 + i
+        moving_object.base.dimension.length = 5
+        moving_object.base.dimension.width = 2
+        moving_object.base.dimension.height = 1
 
-        stationary_object.base.position.x = 0.0 + i
-        stationary_object.base.position.y = 0.0 
-        stationary_object.base.position.z = 0.0
+        moving_object.base.position.x = 0.0 + i
+        moving_object.base.position.y = 0.0 
+        moving_object.base.position.z = 0.0
 
-        stationary_object.base.orientation.roll = 0.0
-        stationary_object.base.orientation.pitch = 0.0
-        stationary_object.base.orientation.yaw = 0.0 
-
-        stationary_object.classification.type = 1
-        stationary_object.classification.material = 0
-        stationary_object.classification.density = 0
-        stationary_object.classification.color = 0
+        moving_object.base.orientation.roll = 0.0
+        moving_object.base.orientation.pitch = 0.0
+        moving_object.base.orientation.yaw = 0.0 
 
         """Serialize SensorData which can be send"""
-        string_buffer = sensorview.SerializeToString()
-
-        f.write(struct.pack("<L", len(string_buffer)) + string_buffer)
+        bbuffer = sensorview.SerializeToString()
+        f.write(struct.pack("<L", len(bbuffer)) + bbuffer)
 
     f.close()
  
@@ -179,9 +184,9 @@ if __name__ == "__main__":
     print(sv)
 
     # Save output into readable osi files
-    scenario.osi2json(name="test4.json")
-    scenario.osi2json(name="test5.json", index=1)
-    scenario.osi2json(name="test6.json", interval=(6, 10))
+    scenario.osi2read(name="test4.txth")
+    scenario.osi2read(name="test5.txth", index=1)
+    scenario.osi2read(name="test6.jstxthon", interval=(6, 10))
 ```
 Type in the terminal:
 ```bash
