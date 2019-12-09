@@ -3,10 +3,10 @@ from decodeOSI import OSITrace
 
 def main():
     """Initialize SensorView"""
-    scenario = OSITrace()
-    scenario.from_file(path="test_scenario.txt")
-    sv = scenario.get_messages() # Create an iterator for messages
-    f = open("test_scenario_changes.txt", "ab")
+    trace = OSITrace()
+    trace.from_file(path="test_trace.txt")
+    sv = trace.get_messages() # Create an iterator for messages
+    f = open("test_trace_changes.txt", "ab")
     
     for message in sv:
 

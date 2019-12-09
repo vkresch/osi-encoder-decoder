@@ -4,7 +4,7 @@ The encoder enables to encode multiple OSI messages into one file. The decoder c
 ## Usage
 
 #### Encode with seperator
-Encode ten OSI messages in the file `test_scenario.txt` which change the dimensions and the x-position of a stationary object over time:
+Encode ten OSI messages in the file `test_trace.txt` which change the dimensions and the x-position of a stationary object over time:
 ```python
 from osi3.osi_sensorview_pb2 import SensorView
 import struct
@@ -63,39 +63,39 @@ $ python3 encodeOSI.py
 ```
 
 #### Decode with seperator
-Decode the generated OSI scenario.
+Decode the generated OSI trace.
 ```python
 from decodeOSI import OSITrace
 
 if __name__ == "__main__":
-    scenario = OSITrace()
-    scenario.from_file(path="test_scenario.txt")
+    trace = OSITrace()
+    trace.from_file(path="test_trace.txt")
 
     # Print all messages
-    sv = scenario.get_messages()
+    sv = trace.get_messages()
     for i in sv:
         print(i)
 
     # Print the osi message in a interval (here from first to ninth)
-    sv = scenario.get_messages_in_index_range(0, 10)
+    sv = trace.get_messages_in_index_range(0, 10)
     for i in sv:
         print(i)
 
     # Print the osi message by index (here the first)
-    sv = scenario.get_message_by_index(0)
+    sv = trace.get_message_by_index(0)
     print(sv)
 
     # Save output into readable osi files
-    scenario.osi2read(name="test1.txth")
-    scenario.osi2read(name="test2.txth", index=1)
-    scenario.osi2read(name="test3.txth", interval=(6, 10))
+    trace.osi2read(name="test1.txth")
+    trace.osi2read(name="test2.txth", index=1)
+    trace.osi2read(name="test3.txth", interval=(6, 10))
 ```
 Type in the terminal:
 ```bash
 $ python3 decodeOSI.py
 ```
 
-#### Convert from seperator scenario to length defined scenario
+#### Convert from seperator trace to length defined trace
 
 Type in the terminal:
 ```bash
@@ -103,7 +103,7 @@ $ python3 txt2osi.py -f small_test.txt
 ```
 
 #### Encode without seperator
-Encode ten OSI messages in the file `test_scenario.txt` which change the dimensions and the x-position of a stationary object over time:
+Encode ten OSI messages in the file `test_trace.txt` which change the dimensions and the x-position of a stationary object over time:
 ```python
 from osi3.osi_sensorview_pb2 import SensorView
 import struct
@@ -161,32 +161,32 @@ $ python3 newencodeOSI.py
 ```
 
 #### Decode without seperator
-Decode the generated OSI scenario.
+Decode the generated OSI trace.
 ```python
 from newdecodeOSI import OSITrace
 
 if __name__ == "__main__":
-    scenario = OSITrace()
-    scenario.from_file(path="test_scenario_new.txt")
+    trace = OSITrace()
+    trace.from_file(path="test_trace_new.txt")
 
     # Print all messages
-    sv = scenario.get_messages()
+    sv = trace.get_messages()
     for i in sv:
         print(i)
 
     # Print the osi message in a interval (here from first to ninth)
-    sv = scenario.get_messages_in_index_range(0, 10)
+    sv = trace.get_messages_in_index_range(0, 10)
     for i in sv:
         print(i)
 
     # Print the osi message by index (here the first)
-    sv = scenario.get_message_by_index(0)
+    sv = trace.get_message_by_index(0)
     print(sv)
 
     # Save output into readable osi files
-    scenario.osi2read(name="test4.txth")
-    scenario.osi2read(name="test5.txth", index=1)
-    scenario.osi2read(name="test6.jstxthon", interval=(6, 10))
+    trace.osi2read(name="test4.txth")
+    trace.osi2read(name="test5.txth", index=1)
+    trace.osi2read(name="test6.jstxthon", interval=(6, 10))
 ```
 Type in the terminal:
 ```bash
@@ -194,5 +194,4 @@ $ python3 newdecodeOSI.py
 ```
 
 #### Requirements
-
-OSI >= 3.1.2
+[OSI](https://github.com/OpenSimulationInterface/open-simulation-interface) >= 3.1.2

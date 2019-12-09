@@ -49,10 +49,10 @@ def main():
     # Handling of command line arguments
     args = command_line_arguments()
 
-    # Initialize the scenario class
-    scenario = OSITrace()
-    scenario.from_file(path=args.file, type_name=args.type)
-    sv = scenario.get_messages() # Create an iterator for messages
+    # Initialize the trace class
+    trace = OSITrace()
+    trace.from_file(path=args.file, type_name=args.type)
+    sv = trace.get_messages() # Create an iterator for messages
 
     args.output = args.output.split('.', 1)[0] + '.osi'
 
@@ -66,6 +66,7 @@ def main():
     
     for message in sv:
         byte_buffer = message.SerializeToString()
+        print(len(byte_buffer))
         f.write(struct.pack("<L", len(byte_buffer)) + byte_buffer) 
     
     f.close()

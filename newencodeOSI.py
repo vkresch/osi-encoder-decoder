@@ -3,7 +3,7 @@ import struct
 
 def main():
     """Initialize SensorView"""
-    f = open("test_trace.txt", "ab")
+    f = open("test_trace.osi", "ab")
     
     sensorview = SensorView()
 

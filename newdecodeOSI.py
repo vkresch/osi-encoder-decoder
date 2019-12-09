@@ -1,5 +1,5 @@
 """
-Module to handle and manage OSI scenarios.
+Module to handle and manage OSI traces.
 """
 from collections import deque
 import time
@@ -18,31 +18,31 @@ MESSAGES_TYPE = {
 
 
 class OSITrace:
-    """This class wrap OSI data. It can import and decode OSI scenarios."""
+    """This class wrap OSI data. It can import and decode OSI traces."""
 
     def __init__(self, show_progress=True, path=None, type_name="SensorView"):
-        self.scenario_file = None
+        self.trace_file = None
         self.message_offsets = None
         self.type_name = type_name
         self.timestep_count = 0
         self.show_progress = show_progress
-        self.retrieved_scenario_size = 0
+        self.retrieved_trace_size = 0
 
         if path is not None and type_name is not None:
             self.from_file(path)
 
     def from_file(self, path, type_name="SensorView", max_index=-1):
-        """Import a scenario from a file"""
+        """Import a trace from a file"""
         if path.lower().endswith(('.lzma', '.xz')):
-            self.scenario_file = lzma.open(path, "rb")
+            self.trace_file = lzma.open(path, "rb")
         else:
-            self.scenario_file = open(path, "rb")
+            self.trace_file = open(path, "rb")
 
         self.type_name = type_name
 
     def get_messages(self):
-        self.scenario_file.seek(0)
-        serialized_message = self.scenario_file.read()
+        self.trace_file.seek(0)
+        serialized_message = self.trace_file.read()
         INT_LENGTH =  len(struct.pack("<L", 0))
         message_length = 0
 
@@ -78,7 +78,7 @@ class OSITrace:
 
             if interval is None and index is not None:
                 if type(index) == int:
-                    f.write(str(scenario.get_message_by_index(0)))
+                    f.write(str(trace.get_message_by_index(0)))
                 else:
                     raise Exception("Argument 'index' needs to be of type 'int'")
 
@@ -87,31 +87,31 @@ class OSITrace:
 
 
 if __name__ == "__main__":
-    scenario = OSITrace()
-    # scenario.from_file(path="test_trace.osi")
-    scenario.from_file(path="test_trace.osi")
+    trace = OSITrace()
+    # trace.from_file(path="test_trace.osi")
+    trace.from_file(path="test_trace.osi")
 
-    sv = scenario.get_messages()
+    sv = trace.get_messages()
     for m in sv:
         print(m)
 
-    # sv = scenario.get_message_by_index(3) 
+    # sv = trace.get_message_by_index(3) 
     # print(sv)
 
     # for i in sv:
     #     print(i)
 
-    # sv = scenario.get_message_by_index(0)
+    # sv = trace.get_message_by_index(0)
     # print(sv)
 
-    # sv = scenario.get_messages()
+    # sv = trace.get_messages()
     # for i in sv:
     #     print(i)
 
-    # scenario.osi2read(name="test_scenario_converted.txth")
-    # scenario.osi2read(name="test1.txth", index=1)
-    # scenario.osi2read(name="test2.txth", interval=(6, 10))
+    # trace.osi2read(name="test_trace_converted.txth")
+    # trace.osi2read(name="test1.txth", index=1)
+    # trace.osi2read(name="test2.txth", interval=(6, 10))
 
-    # scenario.osi2read(name="test4.txth", index=0.2)
-    # scenario.osi2read(name="test5.txth", interval=(4, 3))
+    # trace.osi2read(name="test4.txth", index=0.2)
+    # trace.osi2read(name="test5.txth", interval=(4, 3))
     

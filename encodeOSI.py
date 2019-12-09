@@ -14,6 +14,8 @@ def main():
     sv_ground_truth.timestamp.seconds = 0
     sv_ground_truth.timestamp.nanos = 0
 
+
+
     moving_object = sv_ground_truth.moving_object.add()
     moving_object.id.value = 114
 

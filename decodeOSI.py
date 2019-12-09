@@ -1,5 +1,5 @@
 """
-Module to handle and manage OSI scenarios.
+Module to handle and manage OSI traces.
 """
 from collections import deque
 import time
@@ -34,15 +34,15 @@ MESSAGES_TYPE = {
 
 
 class OSITrace:
-    """This class wrap OSI data. It can import and decode OSI scenarios."""
+    """This class wrap OSI data. It can import and decode OSI traces."""
 
     def __init__(self, show_progress=True, path=None, type_name="SensorView"):
-        self.scenario_file = None
+        self.trace_file = None
         self.message_offsets = None
         self.type_name = type_name
         self.timestep_count = 0
         self.show_progress = show_progress
-        self.retrieved_scenario_size = 0
+        self.retrieved_trace_size = 0
 
         if path is not None and type_name is not None:
             self.from_file(path)
@@ -50,23 +50,23 @@ class OSITrace:
     # Open and Read text file
 
     def from_file(self, path, type_name="SensorView", max_index=-1):
-        """Import a scenario from a file"""
+        """Import a trace from a file"""
         if path.lower().endswith(('.lzma', '.xz')):
-            self.scenario_file = lzma.open(path, "rb")
+            self.trace_file = lzma.open(path, "rb")
         else:
-            self.scenario_file = open(path, "rb")
+            self.trace_file = open(path, "rb")
 
         self.type_name = type_name
         self.timestep_count = self.retrieve_message_offsets(max_index)
 
     def retrieve_message_offsets(self, max_index):
         """
-        Retrieve the offsets of all the messages of the scenario and store them
+        Retrieve the offsets of all the messages of the trace and store them
         in the `message_offsets` attribute of the object
 
         It returns the number of discovered timesteps
         """
-        scenario_size = get_size_from_file_stream(self.scenario_file)
+        trace_size = get_size_from_file_stream(self.trace_file)
 
         if max_index == -1:
             max_index = float('inf')
@@ -76,41 +76,41 @@ class OSITrace:
         self.message_offsets = [0]
         eof = False
 
-        self.scenario_file.seek(0)
+        self.trace_file.seek(0)
 
         while not eof and len(self.message_offsets) <= max_index:
             found = -1  # SEP offset in buffer
             buffer_deque.clear()
 
             while found == -1 and not eof:
-                new_read = self.scenario_file.read(BUFFER_SIZE)
+                new_read = self.trace_file.read(BUFFER_SIZE)
                 buffer_deque.append(new_read)
                 buffer = b"".join(buffer_deque)
                 found = buffer.find(SEPARATOR)
                 eof = len(new_read) != BUFFER_SIZE
 
-            buffer_offset = self.scenario_file.tell() - len(buffer)
+            buffer_offset = self.trace_file.tell() - len(buffer)
             message_offset = found + buffer_offset + SEPARATOR_LENGTH
             self.message_offsets.append(message_offset)
 
-            self.scenario_file.seek(message_offset)
+            self.trace_file.seek(message_offset)
 
             while eof and found != -1:
                 buffer = buffer[found + SEPARATOR_LENGTH:]
                 found = buffer.find(SEPARATOR)
 
-                buffer_offset = scenario_size - len(buffer)
+                buffer_offset = trace_size - len(buffer)
 
                 message_offset = found + buffer_offset + SEPARATOR_LENGTH
 
-                if message_offset >= scenario_size:
+                if message_offset >= trace_size:
                     break
                 self.message_offsets.append(message_offset)
 
         if eof:
-            self.retrieved_scenario_size = scenario_size
+            self.retrieved_trace_size = trace_size
         else:
-            self.retrieved_scenario_size = self.message_offsets[-1]
+            self.retrieved_trace_size = self.message_offsets[-1]
             self.message_offsets.pop()
 
         return len(self.message_offsets)
@@ -129,11 +129,11 @@ class OSITrace:
         """
         Yield an iterator over messages of indexes between begin and end included.
         """
-        self.scenario_file.seek(self.message_offsets[begin])
+        self.trace_file.seek(self.message_offsets[begin])
         abs_first_offset = self.message_offsets[begin]
         abs_last_offset = self.message_offsets[end] \
             if end < len(self.message_offsets) \
-            else self.retrieved_scenario_size
+            else self.retrieved_trace_size
 
         rel_message_offsets = [
             abs_message_offset - abs_first_offset
@@ -142,7 +142,7 @@ class OSITrace:
 
         message_sequence_len = abs_last_offset - \
             abs_first_offset - SEPARATOR_LENGTH
-        serialized_messages_extract = self.scenario_file.read(
+        serialized_messages_extract = self.trace_file.read(
             message_sequence_len)
 
         for rel_index, rel_message_offset in enumerate(rel_message_offsets):
@@ -155,7 +155,7 @@ class OSITrace:
             message.ParseFromString(serialized_message)
             yield message
 
-        self.scenario_file.close()
+        self.trace_file.close()
 
     def osi2read(self, name, interval=None, index=None):
         with open(name, 'a') as f:
@@ -173,7 +173,7 @@ class OSITrace:
 
             if interval is None and index is not None:
                 if type(index) == int:
-                    f.write(str(scenario.get_message_by_index(0)))
+                    f.write(str(trace.get_message_by_index(0)))
                 else:
                     raise Exception("Argument 'index' needs to be of type 'int'")
 
@@ -182,28 +182,32 @@ class OSITrace:
 
 
 if __name__ == "__main__":
-    scenario = OSITrace()
-    scenario.from_file(path="test_trace.txt")
+    trace = OSITrace()
+    trace.from_file(path="test_trace.txt")
+    trace.osi2read(name="test_trace.txth")
 
-    scenario2 = OSITrace()
-    scenario2.from_file(path="test_trace_changes.txt")
+    trace.from_file(path="test_trace_changes.txt")
+    trace.osi2read(name="test_trace_changes.txth")
 
-    # sv = scenario.get_messages_in_index_range(0, 1)
+    # trace2 = OSITrace()
+    # trace2.from_file(path="test_trace_changes.txt")
+
+    # sv = trace.get_messages_in_index_range(0, 1)
     # for i in sv:
     #     print(i)
 
-    # sv = scenario.get_message_by_index(0)
+    # sv = trace.get_message_by_index(0)
     # print(sv)
 
-    # sv = scenario.get_messages()
+    # sv = trace.get_messages()
     # for i in sv:
     #     print(i)
 
-    scenario.osi2read(name="test_trace.txth")
-    scenario2.osi2read(name="test_trace_changes.txth")
-    # scenario.osi2read(name="test1.txth", index=1)
-    # scenario.osi2read(name="test2.txth", interval=(6, 10))
+    
+    # trace2.osi2read(name="test_trace_changes.txth")
+    # trace.osi2read(name="test1.txth", index=1)
+    # trace.osi2read(name="test2.txth", interval=(6, 10))
 
-    # scenario.osi2read(name="test4.txth", index=0.2)
-    # scenario.osi2read(name="test5.txth", interval=(4, 3))
+    # trace.osi2read(name="test4.txth", index=0.2)
+    # trace.osi2read(name="test5.txth", interval=(4, 3))
     
