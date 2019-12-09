@@ -186,7 +186,7 @@ if __name__ == "__main__":
     # Save output into readable osi files
     trace.osi2read(name="test4.txth")
     trace.osi2read(name="test5.txth", index=1)
-    trace.osi2read(name="test6.jstxthon", interval=(6, 10))
+    trace.osi2read(name="test6.txth", interval=(6, 10))
 ```
 Type in the terminal:
 ```bash
